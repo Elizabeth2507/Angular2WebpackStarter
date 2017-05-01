@@ -1,4 +1,5 @@
-﻿var ExtractTextPlugin = require('extract-text-webpack-plugin');
+﻿"use strict";
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -6,7 +7,9 @@ var path = require('path');
 
 module.exports = {
     entry: {
-        'app': './angularApp/app/main.ts'
+        'polyfills': './angular2App/polyfills.ts',
+        'vendor': './angular2App/vendor.ts',
+        'app': './angular2App/app/main.ts'
     },
     devtool: 'source-map',
     performance: {
@@ -49,30 +52,31 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextPlugin('css/[name].bundle.css'),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: ['app', 'vendor', 'polyfills']
-        }),
-        new CleanWebpackPlugin(
-            [
-                './wwwroot/js/',
-                './wwwroot/css/',
-                './wwwroot/assets/',
-                './wwwroot/index.html'
-            ]
-        ),
-        // inject in index.html
-        new HtmlWebpackPlugin({
-            template: './angularApp/index.html',
-            inject: 'body',
-            filename: 'index.html'
-        }),
+         new ExtractTextPlugin('css/[name].bundle.css'),
+         new webpack.optimize.CommonsChunkPlugin({
+             name: ['app', 'vendor', 'polyfills']
+         }),
+         new CleanWebpackPlugin(
+             [
+                 './wwwroot/js/',
+                 './wwwroot/css/',
+                 './wwwroot/assets/',
+                 './wwwroot/index.html'
+             ]
+         ),
+         // inject in index.html
+         new HtmlWebpackPlugin({
+             template: './angular2App/index.html',
+             inject: 'body',
+             filename: 'index.html'
+         }),
+        
+        new webpack.ContextReplacementPlugin(
+  /angular(\\|\/)core(\\|\/)@angular/,
+  path.resolve(__dirname, '../angular2app')
+)
 
-        new webpack.ProvidePlugin({
-            jQuery: 'jquery',
-            $: 'jquery',
-            jquery: 'jquery'
-        })
+     
     ],
     devServer: {
         historyApiFallback: true,
